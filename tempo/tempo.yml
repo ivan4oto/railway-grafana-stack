@@ -22,7 +22,21 @@ distributor:
         http:
           endpoint: "0.0.0.0:4318"
 
-metrics_generator:
-  processor:
-    local_blocks:
-      filter_server_spans: false
+overrides:
+  defaults:
+    ingestion:
+      rate_strategy: local
+      rate_limit_bytes: 15000000
+      burst_size_bytes: 20000000
+      max_traces_per_user: 10000
+    read:
+      max_bytes_per_tag_values_query: 1000000
+    metrics_generator:
+      processors:
+        - span-metrics
+        - local-blocks
+        - service-graphs
+      generate_native_histograms: classic
+      ingestion_time_range_slack: 0s
+    global:
+      max_bytes_per_trace: 5000000
